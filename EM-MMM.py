@@ -35,7 +35,8 @@ def build_input_x_on_other_chromosome_and_e_step(person, initial_pi, signatures_
 
 
 def sum_all_e_arrays(all_person_mmm_array):
-    total_e = logsumexp(all_person_mmm_array, axis=1)
+    e_array = [[mmm.e_array] for mmm in all_person_mmm_array]
+    total_e = logsumexp(e_array, axis=1)# TODO: check this
     return total_e
 
 
