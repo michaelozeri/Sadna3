@@ -1,2 +1,2 @@
-# Sadna3
-this is the 2 - 1 dev for algo
+# Sadna 2
+This is the second type of cross validation for 1 strand impl only
