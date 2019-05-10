@@ -1,4 +1,6 @@
 import json
+import sys
+
 import numpy as np
 from MMM import MMM
 import Utils
@@ -36,7 +38,7 @@ def build_input_x_on_other_chromosome_and_e_step(person, initial_pi, signatures_
 
 def sum_all_e_arrays(all_person_mmm_array):
     e_array = [[mmm.e_array] for mmm in all_person_mmm_array]
-    total_e = logsumexp(e_array, axis=1)# TODO: check this
+    total_e = logsumexp(e_array, axis=1)  # TODO: check this
     return total_e
 
 
@@ -90,5 +92,8 @@ def main_algorithm_2_for_1_strand():
     cross_val_mat = compute_cross_validation_for_total_training_data(strand_info, initial_pi, signatures_data)
 
 
-# function call
-main_algorithm_2_for_1_strand()
+def main():
+    if sys.argv[1] == "1":
+        main_algorithm_2_for_1_strand()
+    else:
+        print("invalid algorithm parameters: please enter number of strands")

@@ -24,44 +24,32 @@ class MMM:
         self.e_array = np.zeros((self.dim_k, self.dim_m))
         self.a_array = np.zeros(self.dim_k)
 
-    def fit(self, input_x_data, mmm_parameters, threshold, max_iteration):
+    def fit(self, input_x_data, threshold, max_iteration):
         current_number_of_iterations = 1
         old_score = self.likelihood(input_x_data)
         self.e_step()
         self.m_step()
         new_score = self.likelihood(input_x_data)
         while (abs(new_score - old_score) > threshold) and (current_number_of_iterations < max_iteration):
-            # print("delta is: " + abs(new_score - old_score).__str__())
             old_score = new_score
             self.e_step()
-            # print(self.log_initial_pi)
             self.m_step()
-            # print(self.log_initial_pi)
             new_score = self.likelihood(input_x_data)
             current_number_of_iterations += 1
-            # print("number of iterations is: " + number_of_iterations.__str__())
         return
 
     def e_step(self):
         # this is the correct calc for the Eij by the PDF
-        for i in range(self.dim_k):
-            for j in range(self.dim_m):
-                temp_log_sum_array = self.log_initial_pi + self.log_signatures_data[:, j]
-                self.e_array[i][j] = (
-                        log(self.b_array[j]) + self.log_initial_pi[i] + self.log_signatures_data[i][j] - logsumexp(
-                    temp_log_sum_array))
+        k_array = [logsumexp((self.log_initial_pi + self.log_signatures_data[:, j])) for j in range(self.dim_m)]
+        self.e_array = [(log(self.b_array) + self.log_initial_pi[i] + self.log_signatures_data[i] - k_array) for i in range(self.dim_k)]
         # this is from the mail with itay to calculate log(Ai)
         self.a_array = logsumexp(self.e_array, axis=1)
 
     # checks convergence from formula
     # on input on input data (sequence or sequences), return log probability to see it
     def likelihood(self, input_x_data):
-        convergence = 0
-        for t in range(self.dim_t):
-            temp_log_sum_array = self.log_initial_pi + self.log_signatures_data[:,
-                                                       int(input_x_data[int(t)])]
-            convergence += logsumexp(temp_log_sum_array)
-        return convergence
+        return np.sum([logsumexp(self.log_initial_pi + self.log_signatures_data[:, int(input_x_data[t])]) for t in
+                       range(self.dim_t)])
 
     def m_step(self):
         self.log_initial_pi = self.a_array - log(self.dim_t)
